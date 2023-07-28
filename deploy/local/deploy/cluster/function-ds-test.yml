@@ -1,0 +1,81 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: function-nodes
+  labels:
+    role: function
+spec:
+  selector:
+    matchLabels:
+      role: function
+  template:
+    metadata:
+      labels:
+        role: function
+    spec:
+      nodeSelector:
+        role: function
+      restartPolicy: Always
+      volumes:
+      - emptyDir:
+          medium: Memory
+          sizeLimit: 10G
+        name: cache-volume
+      hostNetwork: true
+      hostIPC: true
+      containers:
+      - name: function-1
+        resources:
+          limits:
+            cpu: "0.6"
+            memory: "1G"
+        image: cheneyyu/pheromone
+        imagePullPolicy: Always
+        env:
+        - name: THREAD_ID
+          value: "0"
+        - name: ROLE
+          value: executor
+        volumeMounts:
+        - name: cache-volume
+          mountPath: /dev/shm
+      - name: function-2
+        resources:
+          limits:
+            cpu: "0.6"
+            memory: "1G"
+        image: cheneyyu/pheromone
+        imagePullPolicy: Always
+        env:
+        - name: THREAD_ID
+          value: "1"
+        - name: ROLE
+          value: executor
+        volumeMounts:
+        - name: cache-volume
+          mountPath: /dev/shm
+      - name: local-sched
+        image: cheneyyu/pheromone
+        imagePullPolicy: Always
+        resources:
+          limits:
+            cpu: "1"
+            memory: "1G"
+        env:
+        - name: COORD_IPS
+          value: COORD_IPS_DUMMY
+        - name: ROUTE_ADDR
+          value: ROUTE_ADDR_DUMMY
+        - name: ROLE
+          value: scheduler
+        - name: COORD_THREADS
+          value: "1"
+        - name: IO_THREADS
+          value: "1"
+        - name: EXECUTOR_NUM
+          value: "2"
+        - name: DELAY
+          value: "4000000000"
+        volumeMounts:
+        - name: cache-volume
+          mountPath: /dev/shm

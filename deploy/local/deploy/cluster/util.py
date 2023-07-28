@@ -114,6 +114,13 @@ def get_pod_from_ip(client, ip):
     return pod
 
 
+def get_service_cluster_ip(client, svc_name):
+    service = client.read_namespaced_service(namespace=NAMESPACE,
+                                             name=svc_name)
+
+    return service.spec.cluster_ip
+
+
 def get_service_address(client, svc_name):
     try:
         service = client.read_namespaced_service(namespace=NAMESPACE,

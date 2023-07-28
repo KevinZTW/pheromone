@@ -64,6 +64,7 @@ def create_cluster(mem_count, ebs_count, func_count, coord_count,
 
     os.system('cp %s anna-config.yml' % cfile)
     kubecfg = os.path.join(os.environ['HOME'], '.kube/config')
+    
     util.copy_file_to_pod(client, kubecfg, management_podname, '/root/.kube/',
                           kcname)
     util.copy_file_to_pod(client, ssh_key, management_podname, '/root/.ssh/',

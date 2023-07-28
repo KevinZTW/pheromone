@@ -17,16 +17,71 @@
 import argparse
 import os
 
-import boto3
+cluster_name="minikube" # hardcoded for now
+os.environ["PHERO_CLUSTER_NAME"] = cluster_name # hardcoded for now
 
 from deploy.cluster.add_nodes import batch_add_nodes
 from deploy.cluster import util
 
 BATCH_SIZE = 100
 
-ec2_client = boto3.client('ec2', os.getenv('AWS_REGION', 'us-east-1'))
+def create_cluster(ssh_key):
 
-def create_cluster(mem_count, ebs_count, func_count, coord_count,
+    if 'PHERO_HOME' not in os.environ:
+        raise ValueError('PHERO_HOME environment variable must be set')
+    prefix = os.path.join(os.environ['PHERO_HOME'], 'deploy/local/deploy/cluster')
+    client, apps_client = util.init_k8s()
+    print('Creating management pods...')
+    management_spec = util.load_yaml('yaml/pods/management-pod.yml', prefix)
+    
+    # edit the management pod config
+    env = management_spec['spec']['containers'][0]['env']
+    # util.replace_yaml_val(env, 'AWS_ACCESS_KEY_ID', aws_key_id)
+    # util.replace_yaml_val(env, 'AWS_SECRET_ACCESS_KEY', aws_key)
+    # util.replace_yaml_val(env, 'KOPS_STATE_STORE', kops_bucket)
+    util.replace_yaml_val(env, 'PHERO_CLUSTER_NAME', cluster_name)
+    
+    
+    #check if management pod already exists
+    print(util.get_pod_ips(client, 'role=management', is_running=True))
+    if util.get_pod_ips(client, 'role=management', is_running=True) == []:
+        client.create_namespaced_pod(namespace=util.NAMESPACE, body=management_spec)
+    
+    # Waits until the management pod starts to move forward -- we need to do
+    # this because other pods depend on knowing the management pod's IP address.
+    
+    management_ip = util.get_pod_ips(client, 'role=management', is_running=True)[0]
+    print('Creating management service...')
+    
+    service_spec = util.load_yaml('yaml/services/management.yml', prefix)
+    if util.get_service_cluster_ip(client, 'management-service') is None:
+        client.create_namespaced_service(namespace=util.NAMESPACE, body=service_spec)
+    
+    management_podname = management_spec['metadata']['name']
+    print(management_podname)
+    kcname = management_spec['spec']['containers'][0]['name']
+    print(kcname)
+
+    cfile = os.path.join(os.getenv('PHERO_HOME', '../..'),
+                                             'conf/anna-base.yml')
+    os.system('cp %s anna-config.yml' % cfile)
+    
+    kubecfg = os.path.join(os.environ['HOME'], '.kube/config')
+    #  why copy config to pod?
+    util.copy_file_to_pod(client, kubecfg, management_podname, '/root/.kube/',
+                          kcname)
+    util.copy_file_to_pod(client, ssh_key, management_podname, '/root/.ssh/',
+                          kcname)
+    util.copy_file_to_pod(client, ssh_key + '.pub', management_podname,
+                          '/root/.ssh/', kcname)
+    util.copy_file_to_pod(client, 'anna-config.yml', management_podname,
+                          '/hydro/anna/conf/', kcname)
+
+
+
+                          
+
+def create_cluster_old(mem_count, ebs_count, func_count, coord_count,
                    route_count, sender_count, cfile, ssh_key, cluster_name,
                    kops_bucket, aws_key_id, aws_key):
 
@@ -222,13 +277,10 @@ if __name__ == '__main__':
                         default=os.path.join(os.environ['HOME'],
                                              '.ssh/id_rsa'))
 
-    cluster_name = util.check_or_get_env_arg('PHERO_CLUSTER_NAME')
-    kops_bucket = util.check_or_get_env_arg('KOPS_STATE_STORE')
-    aws_key_id = util.check_or_get_env_arg('AWS_ACCESS_KEY_ID')
-    aws_key = util.check_or_get_env_arg('AWS_SECRET_ACCESS_KEY')
+    # cluster_name = util.check_or_get_env_arg('PHERO_CLUSTER_NAME')
+    # kops_bucket = util.check_or_get_env_arg('KOPS_STATE_STORE')
+    # aws_key_id = util.check_or_get_env_arg('AWS_ACCESS_KEY_ID')
+    # aws_key = util.check_or_get_env_arg('AWS_SECRET_ACCESS_KEY')
 
     args = parser.parse_args()
-    create_cluster(args.memory[0], args.ebs, args.function[0],
-                   args.coordinator[0], args.routing[0], args.sender,
-                   args.conf, args.sshkey, cluster_name, kops_bucket,
-                   aws_key_id, aws_key)
+    create_cluster(args.sshkey)

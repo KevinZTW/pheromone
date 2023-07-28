@@ -17,11 +17,10 @@
 import random
 import os
 
-import boto3
+
 
 from deploy.cluster import util
 
-ec2_client = boto3.client('ec2', os.getenv('AWS_REGION', 'us-east-1'))
 
 # Generate list of all recently created pods.
 def get_current_pod_container_pairs(pods):
