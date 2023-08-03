@@ -31,5 +31,5 @@ spec:
       value: hydro-project
     - name: REPO_BRANCH
       value: master
-  # nodeSelector:
-  #   role: general
+  nodeSelector:
+    role: general

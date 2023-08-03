@@ -54,8 +54,8 @@ def create_cluster(mem_count, ebs_count, func_count, coord_count,
     print('Creating management service...')
     
     service_spec = util.load_yaml('yaml/services/management.yml', prefix)
-    if util.get_service_cluster_ip(client, 'management-service') is None:
-        client.create_namespaced_service(namespace=util.NAMESPACE, body=service_spec)
+    # if util.get_service_cluster_ip(client, 'management-service') is None:
+    client.create_namespaced_service(namespace=util.NAMESPACE, body=service_spec)
     
     management_podname = management_spec['metadata']['name']
     print(management_podname)

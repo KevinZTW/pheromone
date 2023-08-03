@@ -17,5 +17,5 @@ spec:
   # - port: 7900
   #   targetPort: 7900
   #   name: trigger-op
-  # selector:
-  #   role: management
+  selector:
+    role: management

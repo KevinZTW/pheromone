@@ -22,5 +22,5 @@ spec:
       value: manager
     - name: EXTERNAL_USER
       value: "1"
-  # nodeSelector:
-  #   role: general
+  nodeSelector:
+    role: general
