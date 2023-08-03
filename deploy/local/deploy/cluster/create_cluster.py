@@ -25,7 +25,8 @@ from deploy.cluster import util
 
 BATCH_SIZE = 100
 
-def create_cluster(ssh_key):
+def create_cluster(mem_count, ebs_count, func_count, coord_count,
+                   route_count, sender_count, cfile, ssh_key):
 
     if 'PHERO_HOME' not in os.environ:
         raise ValueError('PHERO_HOME environment variable must be set')
@@ -43,7 +44,6 @@ def create_cluster(ssh_key):
     
     
     #check if management pod already exists
-    print(util.get_pod_ips(client, 'role=management', is_running=True))
     if util.get_pod_ips(client, 'role=management', is_running=True) == []:
         client.create_namespaced_pod(namespace=util.NAMESPACE, body=management_spec)
     
@@ -67,6 +67,7 @@ def create_cluster(ssh_key):
     os.system('cp %s anna-config.yml' % cfile)
     
     kubecfg = os.path.join(os.environ['HOME'], '.kube/config')
+    
     #  why copy config to pod?
     util.copy_file_to_pod(client, kubecfg, management_podname, '/root/.kube/',
                           kcname)
@@ -76,7 +77,119 @@ def create_cluster(ssh_key):
                           '/root/.ssh/', kcname)
     util.copy_file_to_pod(client, 'anna-config.yml', management_podname,
                           '/hydro/anna/conf/', kcname)
+    
+    # Start the monitoring pod.
+    mon_spec = util.load_yaml('yaml/pods/monitoring-pod.yml', prefix)
+    util.replace_yaml_val(mon_spec['spec']['containers'][0]['env'], 'MGMT_IP',
+                          management_ip)
+    if util.get_pod_ips(client, 'role=monitoring', is_running=True) == []:
+        print("creating monitoring pod")
+        client.create_namespaced_pod(namespace=util.NAMESPACE, body=mon_spec)
 
+    # Wait until the monitoring pod is finished creating to get its IP address
+    # and then copy KVS config into the monitoring pod.
+    util.get_pod_ips(client, 'role=monitoring', is_running=True)
+    util.copy_file_to_pod(client, 'anna-config.yml',
+                          mon_spec['metadata']['name'],
+                          '/hydro/anna/conf/',
+                          mon_spec['spec']['containers'][0]['name'])
+    os.system('rm anna-config.yml')
+
+    print('Creating %d routing nodes...' % (route_count))
+
+
+    batch_add_nodes(client, apps_client, cfile, ['routing'], [route_count], BATCH_SIZE, prefix)
+    util.get_pod_ips(client, 'role=routing')
+
+
+    print('Creating %d memory, %d ebs node(s)...' %
+          (mem_count, ebs_count))
+    
+    batch_add_nodes(client, apps_client, cfile, ['memory', 'ebs'], [mem_count,
+                                                                    ebs_count],
+                    BATCH_SIZE, prefix)
+
+    print('Creating routing service...')
+    service_spec = util.load_yaml('yaml/services/routing.yml', prefix)
+    # Only create the routing service if it isn't up already
+    # (e.g. from a previous execution of the script).
+    if util.get_service_address(client, 'routing-service') is None:
+        client.create_namespaced_service(namespace=util.NAMESPACE,
+                                         body=service_spec)
+
+    print('Adding %d coordinator nodes...' % (coord_count))
+    batch_add_nodes(client, apps_client, cfile, ['coordinator'], [coord_count], BATCH_SIZE, prefix)
+    util.get_pod_ips(client, 'role=coordinator')
+
+    coord_ips = util.get_pod_ips(client, 'role=coordinator')
+    print(f'Coordinator ips: {coord_ips}')
+
+    print('Adding %d function nodes...' % (func_count))
+    batch_add_nodes(client, apps_client, cfile, ['function'], [func_count], BATCH_SIZE, prefix)
+
+    print('Adding %d sender/client nodes...' % (sender_count))
+    batch_add_nodes(client, apps_client, cfile, ['sender'], [sender_count], BATCH_SIZE, prefix)
+
+    print('Finished creating all pods...')
+    # os.system('touch setup_complete')
+    # util.copy_file_to_pod(client, 'setup_complete', management_podname, '/hydro',
+    #                       kcname)
+    # os.system('rm setup_complete')
+
+    sg_name = 'nodes.' + cluster_name
+    sg = ec2_client.describe_security_groups(
+          Filters=[{'Name': 'group-name',
+                    'Values': [sg_name]}])['SecurityGroups'][0]
+
+    print('Authorizing ports for routing service...')
+    #  [kevin] comment out since we are not using kops/aws (do we need to do this for kubespray?)
+    # permission = [
+    #     {
+    #     'FromPort': 7800,
+    #     'IpProtocol': 'tcp',
+    #     'ToPort': 7950,
+    #     'IpRanges': [{
+    #         'CidrIp': '0.0.0.0/0'
+    #     }]},
+    #     {
+    #     'FromPort': 6450,
+    #     'IpProtocol': 'tcp',
+    #     'ToPort': 6453,
+    #     'IpRanges': [{
+    #         'CidrIp': '0.0.0.0/0'
+    #     }]},
+    #     {
+    #     'FromPort': 6200,
+    #     'IpProtocol': 'tcp',
+    #     'ToPort': 6203,
+    #     'IpRanges': [{
+    #         'CidrIp': '0.0.0.0/0'
+    #     }]},
+    #     {
+    #     'FromPort': 6001,
+    #     'IpProtocol': 'tcp',
+    #     'ToPort': 6002,
+    #     'IpRanges': [{
+    #         'CidrIp': '0.0.0.0/0'
+    #     }]},
+    #     {
+    #     'FromPort': 5000,
+    #     'IpProtocol': 'tcp',
+    #     'ToPort': 5080,
+    #     'IpRanges': [{
+    #         'CidrIp': '0.0.0.0/0'
+    #     }]}
+    # ]
+
+    # ec2_client.authorize_security_group_ingress(GroupId=sg['GroupId'],
+                                                # IpPermissions=permission)
+
+    routing_svc_addr = util.get_service_address(client, 'routing-service')
+    management_svc_addr = util.get_service_address(client, 'management-service')
+    print('Anna the kvs service can be accessed here: \n\t%s' %
+          (routing_svc_addr))
+    print('Pheromone can be accessed here: \n\t%s' %
+          (management_svc_addr))
 
 
                           
@@ -283,4 +396,6 @@ if __name__ == '__main__':
     # aws_key = util.check_or_get_env_arg('AWS_SECRET_ACCESS_KEY')
 
     args = parser.parse_args()
-    create_cluster(args.sshkey)
+    create_cluster(args.memory[0], args.ebs, args.function[0],
+                   args.coordinator[0], args.routing[0], args.sender,
+                   args.conf, args.sshkey)

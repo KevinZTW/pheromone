@@ -51,7 +51,8 @@ def add_nodes(client, apps_client, cfile, kinds, counts, create=False,
                                                           prev_count)])
         expected_counts.append(counts[i] + prev_count)
 
-    util.run_process(['./validate_cluster.sh'])
+    # [kevin] comment this out since we are not using kops
+    # util.run_process(['./validate_cluster.sh'])
 
     management_ip = util.get_pod_ips(client, 'role=management')[0]
     route_ips = util.get_pod_ips(client, 'role=routing')
