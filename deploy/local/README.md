@@ -1,3 +1,0 @@
-# Locally Deploy Pheromone
-
-TODO
