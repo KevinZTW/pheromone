@@ -51,11 +51,15 @@ def create_cluster(mem_count, ebs_count, func_count, coord_count,
     # this because other pods depend on knowing the management pod's IP address.
     
     management_ip = util.get_pod_ips(client, 'role=management', is_running=True)[0]
-    print('Creating management service...')
+    
     
     service_spec = util.load_yaml('yaml/services/management.yml', prefix)
-    # if util.get_service_cluster_ip(client, 'management-service') is None:
-    client.create_namespaced_service(namespace=util.NAMESPACE, body=service_spec)
+    if util.get_service_cluster_ip(client, 'management-service') is None:
+        print('Creating management service...')
+        client.create_namespaced_service(namespace=util.NAMESPACE, body=service_spec)
+    else:
+        print('management service already exists, skip...') 
+
     
     management_podname = management_spec['metadata']['name']
     print(management_podname)
@@ -135,14 +139,14 @@ def create_cluster(mem_count, ebs_count, func_count, coord_count,
     # util.copy_file_to_pod(client, 'setup_complete', management_podname, '/hydro',
     #                       kcname)
     # os.system('rm setup_complete')
-
-    sg_name = 'nodes.' + cluster_name
-    sg = ec2_client.describe_security_groups(
-          Filters=[{'Name': 'group-name',
-                    'Values': [sg_name]}])['SecurityGroups'][0]
-
-    print('Authorizing ports for routing service...')
+    
     #  [kevin] comment out since we are not using kops/aws (do we need to do this for kubespray?)
+    # sg_name = 'nodes.' + cluster_name
+    # sg = ec2_client.describe_security_groups(
+    #       Filters=[{'Name': 'group-name',
+    #                 'Values': [sg_name]}])['SecurityGroups'][0]
+
+    # print('Authorizing ports for routing service...')
     # permission = [
     #     {
     #     'FromPort': 7800,
@@ -293,53 +297,53 @@ def create_cluster_old(mem_count, ebs_count, func_count, coord_count,
     #                       kcname)
     # os.system('rm setup_complete')
 
-    sg_name = 'nodes.' + cluster_name
-    sg = ec2_client.describe_security_groups(
-          Filters=[{'Name': 'group-name',
-                    'Values': [sg_name]}])['SecurityGroups'][0]
+    # sg_name = 'nodes.' + cluster_name
+    # sg = ec2_client.describe_security_groups(
+    #       Filters=[{'Name': 'group-name',
+    #                 'Values': [sg_name]}])['SecurityGroups'][0]
 
-    print('Authorizing ports for routing service...')
+    # print('Authorizing ports for routing service...')
 
-    permission = [
-        {
-        'FromPort': 7800,
-        'IpProtocol': 'tcp',
-        'ToPort': 7950,
-        'IpRanges': [{
-            'CidrIp': '0.0.0.0/0'
-        }]},
-        {
-        'FromPort': 6450,
-        'IpProtocol': 'tcp',
-        'ToPort': 6453,
-        'IpRanges': [{
-            'CidrIp': '0.0.0.0/0'
-        }]},
-        {
-        'FromPort': 6200,
-        'IpProtocol': 'tcp',
-        'ToPort': 6203,
-        'IpRanges': [{
-            'CidrIp': '0.0.0.0/0'
-        }]},
-        {
-        'FromPort': 6001,
-        'IpProtocol': 'tcp',
-        'ToPort': 6002,
-        'IpRanges': [{
-            'CidrIp': '0.0.0.0/0'
-        }]},
-        {
-        'FromPort': 5000,
-        'IpProtocol': 'tcp',
-        'ToPort': 5080,
-        'IpRanges': [{
-            'CidrIp': '0.0.0.0/0'
-        }]}
-    ]
+    # permission = [
+    #     {
+    #     'FromPort': 7800,
+    #     'IpProtocol': 'tcp',
+    #     'ToPort': 7950,
+    #     'IpRanges': [{
+    #         'CidrIp': '0.0.0.0/0'
+    #     }]},
+    #     {
+    #     'FromPort': 6450,
+    #     'IpProtocol': 'tcp',
+    #     'ToPort': 6453,
+    #     'IpRanges': [{
+    #         'CidrIp': '0.0.0.0/0'
+    #     }]},
+    #     {
+    #     'FromPort': 6200,
+    #     'IpProtocol': 'tcp',
+    #     'ToPort': 6203,
+    #     'IpRanges': [{
+    #         'CidrIp': '0.0.0.0/0'
+    #     }]},
+    #     {
+    #     'FromPort': 6001,
+    #     'IpProtocol': 'tcp',
+    #     'ToPort': 6002,
+    #     'IpRanges': [{
+    #         'CidrIp': '0.0.0.0/0'
+    #     }]},
+    #     {
+    #     'FromPort': 5000,
+    #     'IpProtocol': 'tcp',
+    #     'ToPort': 5080,
+    #     'IpRanges': [{
+    #         'CidrIp': '0.0.0.0/0'
+    #     }]}
+    # ]
 
-    ec2_client.authorize_security_group_ingress(GroupId=sg['GroupId'],
-                                                IpPermissions=permission)
+    # ec2_client.authorize_security_group_ingress(GroupId=sg['GroupId'],
+    #                                             IpPermissions=permission)
 
     routing_svc_addr = util.get_service_address(client, 'routing-service')
     management_svc_addr = util.get_service_address(client, 'management-service')

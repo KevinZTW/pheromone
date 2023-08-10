@@ -103,6 +103,7 @@ def add_nodes(client, apps_client, cfile, kinds, counts, create=False,
         # Wait until all pods of this kind are running
         res = []
         while len(res) != expected_counts[i]:
+            print("expect: " + str(expected_counts[i]) + "but got: " + str(len(res)))
             res = util.get_pod_ips(client, 'role='+kind, is_running=True)
 
         pods = client.list_namespaced_pod(namespace=util.NAMESPACE,
