@@ -22,25 +22,32 @@ kubectl label nodes node-5 role=coordinator
 kubectl label nodes node-6 role=sender
 
 # in below operation we don't use the ebs node
-
+```sh
 cd pheromone
 export PHERO_HOME=$(pwd)
-cd deploy/local
-python3 -m deploy.cluster.create_cluster  -m 1 -r 1 -c 1 -f 1
+cd deploy/cloudlab
+python3 -m deploy.cluster.create_cluster  -m 1 -r 1 -c 1 -f 1 # if encounter any problem, could exeucte deploy/cluster/cleanup.sh
+```
 
-
+- ======= setup the pheromone client =========
+```sh
 sudo apt-get install protobuf-compiler
 pip install protobuf==3.20.0
-
 cd ../..
-scripts/compile.sh #generate protos
+```
+- generate protos `scripts/compile.sh`
 
-cd client/anna_client
+- install anna_client for the pheromone client
+```sh
+cd client/anna_client 
 sudo python3 ./setup.py install
+```
 
-wget -qO- https://ipecho.net/plain | xargs echo # get my ip?
-# fill in the ip, routing service's external ip as anna_address, management ip as pheromone_address in the PheromoneClient() argument in  /client/pheromone/bench_common.py
+- execute the benchamrk script
+wget -qO- https://ipecho.net/plain | xargs echo 
+- (Still try to figure out) Myabe fill in the ip, routing service's external ip as anna_address, management ip as pheromone_address in the PheromoneClient() argument in  /client/pheromone/bench_common.py 
+
+```sh
 cd ../pheromone
-
 $ pheromone/client/pheromone python3 -m benchmarks.event_gen
 ```
