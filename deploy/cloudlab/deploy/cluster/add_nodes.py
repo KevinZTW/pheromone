@@ -70,8 +70,9 @@ def add_nodes(client, apps_client, cfile, kinds, counts, create=False,
     route_str = ' '.join(route_ips)
     sched_str = ' '.join(util.get_pod_ips(client, 'role=coordinator'))
 
-    route_addr = util.get_service_address(client, 'routing-service')
-    function_addr = util.get_service_address(client, 'function-service')
+    # use cluster ip instead of service address
+    route_addr = util.get_service_cluster_ip(client, 'routing-service')
+    function_addr = util.get_service_cluster_ip(client, 'function-service')
 
     for i in range(len(kinds)):
         kind = kinds[i]
