@@ -113,13 +113,15 @@ def create_cluster(mem_count, ebs_count, func_count, coord_count,
                                                                     ebs_count],
                     BATCH_SIZE, prefix)
 
-    print('Creating routing service...')
+    
     service_spec = util.load_yaml('yaml/services/routing.yml', prefix)
-    # Only create the routing service if it isn't up already
-    # (e.g. from a previous execution of the script).
-    if util.get_service_address(client, 'routing-service') is None:
+
+    if util.get_service_cluster_ip(client, 'routing-service') is None:
+        print('Creating routing service...')
         client.create_namespaced_service(namespace=util.NAMESPACE,
                                          body=service_spec)
+    else:
+        print('routing service already exists, skip...')
 
     print('Adding %d coordinator nodes...' % (coord_count))
     batch_add_nodes(client, apps_client, cfile, ['coordinator'], [coord_count], BATCH_SIZE, prefix)
