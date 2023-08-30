@@ -122,7 +122,7 @@ def get_service_cluster_ip(client, svc_name):
     except k8s.client.rest.ApiException:
         return None
 
-def get_service_external_ip():
+def get_service_external_ip(client, svc_name):
     try:
         service = client.read_namespaced_service(namespace=NAMESPACE,
                                              name=svc_name)
