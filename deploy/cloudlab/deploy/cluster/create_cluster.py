@@ -30,7 +30,7 @@ def create_cluster(mem_count, ebs_count, func_count, coord_count,
 
     if 'PHERO_HOME' not in os.environ:
         raise ValueError('PHERO_HOME environment variable must be set')
-    prefix = os.path.join(os.environ['PHERO_HOME'], 'deploy/local/deploy/cluster')
+    prefix = os.path.join(os.environ['PHERO_HOME'], 'deploy/cloudlab/deploy/cluster')
     client, apps_client = util.init_k8s()
     print('Creating management pods...')
     management_spec = util.load_yaml('yaml/pods/management-pod.yml', prefix)
