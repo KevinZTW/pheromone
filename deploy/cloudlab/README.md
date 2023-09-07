@@ -32,6 +32,7 @@ python3 -m deploy.cluster.create_cluster  -m 1 -r 1 -c 1 -f 1 # if encounter any
 ```sh
 sudo apt-get install protobuf-compiler
 pip install protobuf==3.20.0
+pip install numpy
 cd ../..
 ```
 - generate protos `scripts/compile.sh`
@@ -44,7 +45,8 @@ sudo python3 ./setup.py install
 
 ### execute the pheromone benchamrk script
 - get host ip: `wget -qO- https://ipecho.net/plain | xargs echo`
-- (Still try to figure out) Myabe fill in the ip, routing service's external ip as anna_address, management ip as pheromone_address in the PheromoneClient() argument in  /client/pheromone/bench_common.py 
+- fill in the routing service's external ip as anna_address, management ip as pheromone_address in the PheromoneClient() argument in  /client/pheromone/bench_common.py 
+- 
 
 ```sh
 cd ../pheromone

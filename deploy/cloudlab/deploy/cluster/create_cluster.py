@@ -116,7 +116,7 @@ def create_cluster(mem_count, ebs_count, func_count, coord_count,
     
     service_spec = util.load_yaml('yaml/services/routing.yml', prefix)
 
-    if util.get_service_cluster_ip(client, 'routing-service') is None:
+    if util.get_service_external_ip(client, 'routing-service') is None:
         print('Creating routing service...')
         client.create_namespaced_service(namespace=util.NAMESPACE,
                                          body=service_spec)
@@ -190,8 +190,8 @@ def create_cluster(mem_count, ebs_count, func_count, coord_count,
     # ec2_client.authorize_security_group_ingress(GroupId=sg['GroupId'],
                                                 # IpPermissions=permission)
 
-    routing_svc_addr = util.get_service_address(client, 'routing-service')
-    management_svc_addr = util.get_service_address(client, 'management-service')
+    routing_svc_addr = util.get_service_external_ip(client, 'routing-service')
+    management_svc_addr = util.get_service_external_ip(client, 'management-service')
     print('Anna the kvs service can be accessed here: \n\t%s' %
           (routing_svc_addr))
     print('Pheromone can be accessed here: \n\t%s' %
@@ -294,61 +294,13 @@ def create_cluster_old(mem_count, ebs_count, func_count, coord_count,
     batch_add_nodes(client, apps_client, cfile, ['sender'], [sender_count], BATCH_SIZE, prefix)
 
     print('Finished creating all pods...')
-    # os.system('touch setup_complete')
-    # util.copy_file_to_pod(client, 'setup_complete', management_podname, '/hydro',
-    #                       kcname)
-    # os.system('rm setup_complete')
+    os.system('touch setup_complete')
+    util.copy_file_to_pod(client, 'setup_complete', management_podname, '/hydro',
+                          kcname)
+    os.system('rm setup_complete')
 
-    # sg_name = 'nodes.' + cluster_name
-    # sg = ec2_client.describe_security_groups(
-    #       Filters=[{'Name': 'group-name',
-    #                 'Values': [sg_name]}])['SecurityGroups'][0]
-
-    # print('Authorizing ports for routing service...')
-
-    # permission = [
-    #     {
-    #     'FromPort': 7800,
-    #     'IpProtocol': 'tcp',
-    #     'ToPort': 7950,
-    #     'IpRanges': [{
-    #         'CidrIp': '0.0.0.0/0'
-    #     }]},
-    #     {
-    #     'FromPort': 6450,
-    #     'IpProtocol': 'tcp',
-    #     'ToPort': 6453,
-    #     'IpRanges': [{
-    #         'CidrIp': '0.0.0.0/0'
-    #     }]},
-    #     {
-    #     'FromPort': 6200,
-    #     'IpProtocol': 'tcp',
-    #     'ToPort': 6203,
-    #     'IpRanges': [{
-    #         'CidrIp': '0.0.0.0/0'
-    #     }]},
-    #     {
-    #     'FromPort': 6001,
-    #     'IpProtocol': 'tcp',
-    #     'ToPort': 6002,
-    #     'IpRanges': [{
-    #         'CidrIp': '0.0.0.0/0'
-    #     }]},
-    #     {
-    #     'FromPort': 5000,
-    #     'IpProtocol': 'tcp',
-    #     'ToPort': 5080,
-    #     'IpRanges': [{
-    #         'CidrIp': '0.0.0.0/0'
-    #     }]}
-    # ]
-
-    # ec2_client.authorize_security_group_ingress(GroupId=sg['GroupId'],
-    #                                             IpPermissions=permission)
-
-    routing_svc_addr = util.get_service_address(client, 'routing-service')
-    management_svc_addr = util.get_service_address(client, 'management-service')
+    routing_svc_addr = util.get_service_external_ip(client, 'routing-service')
+    management_svc_addr = util.get_service_external_ip(client, 'management-service')
     print('Anna the kvs service can be accessed here: \n\t%s' %
           (routing_svc_addr))
     print('Pheromone can be accessed here: \n\t%s' %
