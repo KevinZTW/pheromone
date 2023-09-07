@@ -42,7 +42,7 @@ for i in range(num):
           limits:
             cpu: "0.6"
             memory: "1G"
-        image: cheneyyu/pheromone
+        image: kevinztw/pheromone
         imagePullPolicy: Always
         env:
         - name: THREAD_ID
@@ -55,7 +55,7 @@ for i in range(num):
 '''
 
 suffix = '''      - name: local-sched
-        image: cheneyyu/pheromone
+        image: kevinztw/pheromone
         imagePullPolicy: Always
         resources:
           limits:

@@ -8,7 +8,7 @@ spec:
   restartPolicy: Never
   containers:
   - name: management-container
-    image: cheneyyu/pheromone
+    image: kevinztw/pheromone
     env:
     - name: AWS_ACCESS_KEY_ID
       value: ACCESS_KEY_ID_DUMMY

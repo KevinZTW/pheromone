@@ -29,7 +29,7 @@ spec:
           limits:
             cpu: "0.6"
             memory: "1G"
-        image: cheneyyu/pheromone
+        image: kevinztw/pheromone
         imagePullPolicy: Always
         env:
         - name: THREAD_ID
@@ -44,7 +44,7 @@ spec:
           limits:
             cpu: "0.6"
             memory: "1G"
-        image: cheneyyu/pheromone
+        image: kevinztw/pheromone
         imagePullPolicy: Always
         env:
         - name: THREAD_ID
@@ -55,7 +55,7 @@ spec:
         - name: cache-volume
           mountPath: /dev/shm
       - name: local-sched
-        image: cheneyyu/pheromone
+        image: kevinztw/pheromone
         imagePullPolicy: Always
         resources:
           limits:
