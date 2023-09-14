@@ -32,3 +32,7 @@ spec:
           value: "1"
         - name: ROLE
           value: coordinator
+        - name: MY_POD_IP
+          valueFrom:  
+            fieldRef:
+              fieldPath: status.podIP

@@ -17,8 +17,9 @@ gen_yml_list() {
 
 git pull origin main
 
-#IP=`ifconfig eth0 | grep 'inet' | grep -v inet6 | sed -e 's/^[ \t]*//' | cut -d' ' -f2`
-IP=`ifconfig enp6s0f1 | grep 'inet' | grep -v inet6 | sed -e 's/^[ \t]*//' | cut -d' ' -f2`
+# IP=`ifconfig eth0 | grep 'inet' | grep -v inet6 | sed -e 's/^[ \t]*//' | cut -d' ' -f2`
+# IP=`ifconfig enp6s0f1 | grep 'inet' | grep -v inet6 | sed -e 's/^[ \t]*//' | cut -d' ' -f2`
+IP=$MY_POD_IP
 
 cd build && make -j4 && cd ..
 touch conf/config.yml

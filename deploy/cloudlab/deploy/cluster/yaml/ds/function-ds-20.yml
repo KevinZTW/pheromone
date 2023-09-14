@@ -32,6 +32,10 @@ spec:
           value: "0"
         - name: ROLE
           value: executor
+        - name: MY_POD_IP
+          valueFrom:  
+            fieldRef:
+              fieldPath: status.podIP
         volumeMounts:
         - name: cache-volume
           mountPath: /dev/shm
@@ -44,6 +48,10 @@ spec:
           value: "1"
         - name: ROLE
           value: executor
+        - name: MY_POD_IP
+          valueFrom:  
+            fieldRef:
+              fieldPath: status.podIP
         volumeMounts:
         - name: cache-volume
           mountPath: /dev/shm
@@ -58,6 +66,10 @@ spec:
         volumeMounts:
         - name: cache-volume
           mountPath: /dev/shm
+        - name: MY_POD_IP
+          valueFrom:  
+            fieldRef:
+              fieldPath: status.podIP
       - name: function-4
         resources:
         image: kevinztw/pheromone
@@ -67,6 +79,10 @@ spec:
           value: "3"
         - name: ROLE
           value: executor
+        - name: MY_POD_IP
+          valueFrom:  
+            fieldRef:
+              fieldPath: status.podIP
         volumeMounts:
         - name: cache-volume
           mountPath: /dev/shm
@@ -78,6 +94,10 @@ spec:
           value: "4"
         - name: ROLE
           value: executor
+        - name: MY_POD_IP
+          valueFrom:  
+            fieldRef:
+              fieldPath: status.podIP
         volumeMounts:
         - name: cache-volume
           mountPath: /dev/shm
@@ -90,6 +110,10 @@ spec:
           value: "5"
         - name: ROLE
           value: executor
+        - name: MY_POD_IP
+          valueFrom:  
+            fieldRef:
+              fieldPath: status.podIP
         volumeMounts:
         - name: cache-volume
           mountPath: /dev/shm
@@ -101,6 +125,10 @@ spec:
           value: "6"
         - name: ROLE
           value: executor
+        - name: MY_POD_IP
+          valueFrom:  
+            fieldRef:
+              fieldPath: status.podIP
         volumeMounts:
         - name: cache-volume
           mountPath: /dev/shm
@@ -113,6 +141,10 @@ spec:
           value: "7"
         - name: ROLE
           value: executor
+        - name: MY_POD_IP
+          valueFrom:  
+            fieldRef:
+              fieldPath: status.podIP
         volumeMounts:
         - name: cache-volume
           mountPath: /dev/shm
@@ -124,6 +156,10 @@ spec:
           value: "8"
         - name: ROLE
           value: executor
+        - name: MY_POD_IP
+          valueFrom:  
+            fieldRef:
+              fieldPath: status.podIP
         volumeMounts:
         - name: cache-volume
           mountPath: /dev/shm
@@ -136,6 +172,10 @@ spec:
           value: "9"
         - name: ROLE
           value: executor
+        - name: MY_POD_IP
+          valueFrom:  
+            fieldRef:
+              fieldPath: status.podIP
         volumeMounts:
         - name: cache-volume
           mountPath: /dev/shm
@@ -147,6 +187,10 @@ spec:
           value: "10"
         - name: ROLE
           value: executor
+        - name: MY_POD_IP
+          valueFrom:  
+            fieldRef:
+              fieldPath: status.podIP
         volumeMounts:
         - name: cache-volume
           mountPath: /dev/shm
@@ -159,6 +203,10 @@ spec:
           value: "11"
         - name: ROLE
           value: executor
+        - name: MY_POD_IP
+          valueFrom:  
+            fieldRef:
+              fieldPath: status.podIP
         volumeMounts:
         - name: cache-volume
           mountPath: /dev/shm
@@ -170,6 +218,10 @@ spec:
           value: "12"
         - name: ROLE
           value: executor
+        - name: MY_POD_IP
+          valueFrom:  
+            fieldRef:
+              fieldPath: status.podIP
         volumeMounts:
         - name: cache-volume
           mountPath: /dev/shm
@@ -182,6 +234,10 @@ spec:
           value: "13"
         - name: ROLE
           value: executor
+        - name: MY_POD_IP
+          valueFrom:  
+            fieldRef:
+              fieldPath: status.podIP
         volumeMounts:
         - name: cache-volume
           mountPath: /dev/shm
@@ -193,6 +249,10 @@ spec:
           value: "14"
         - name: ROLE
           value: executor
+        - name: MY_POD_IP
+          valueFrom:  
+            fieldRef:
+              fieldPath: status.podIP
         volumeMounts:
         - name: cache-volume
           mountPath: /dev/shm
@@ -205,6 +265,10 @@ spec:
           value: "15"
         - name: ROLE
           value: executor
+        - name: MY_POD_IP
+          valueFrom:  
+            fieldRef:
+              fieldPath: status.podIP
         volumeMounts:
         - name: cache-volume
           mountPath: /dev/shm
@@ -216,6 +280,10 @@ spec:
           value: "16"
         - name: ROLE
           value: executor
+        - name: MY_POD_IP
+          valueFrom:  
+            fieldRef:
+              fieldPath: status.podIP
         volumeMounts:
         - name: cache-volume
           mountPath: /dev/shm
@@ -228,6 +296,10 @@ spec:
           value: "17"
         - name: ROLE
           value: executor
+        - name: MY_POD_IP
+          valueFrom:  
+            fieldRef:
+              fieldPath: status.podIP
         volumeMounts:
         - name: cache-volume
           mountPath: /dev/shm
@@ -239,6 +311,10 @@ spec:
           value: "18"
         - name: ROLE
           value: executor
+        - name: MY_POD_IP
+          valueFrom:  
+            fieldRef:
+              fieldPath: status.podIP
         volumeMounts:
         - name: cache-volume
           mountPath: /dev/shm
@@ -251,6 +327,10 @@ spec:
           value: "19"
         - name: ROLE
           value: executor
+        - name: MY_POD_IP
+          valueFrom:  
+            fieldRef:
+              fieldPath: status.podIP
         volumeMounts:
         - name: cache-volume
           mountPath: /dev/shm
@@ -278,6 +358,10 @@ spec:
           value: "1"
         - name: EXECUTOR_NUM
           value: "20"
+        - name: MY_POD_IP
+          valueFrom:  
+            fieldRef:
+              fieldPath: status.podIP
         volumeMounts:
         - name: cache-volume
           mountPath: /dev/shm

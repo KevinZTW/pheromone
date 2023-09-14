@@ -22,5 +22,9 @@ spec:
       value: manager
     - name: EXTERNAL_USER
       value: "1"
+    - name: MY_POD_IP
+          valueFrom:  
+            fieldRef:
+              fieldPath: status.podIP
   nodeSelector:
     role: general

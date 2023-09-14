@@ -27,5 +27,9 @@ spec:
           value: COORD_IPS_DUMMY
         - name: MANAGEMENT
           value: MANAGEMENT_DUMMY
+        - name: MY_POD_IP
+          valueFrom:  
+            fieldRef:
+              fieldPath: status.podIP
         command: ["sleep"]
         args: ["infinity"]

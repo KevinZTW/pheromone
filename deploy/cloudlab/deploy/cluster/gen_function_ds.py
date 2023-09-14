@@ -49,6 +49,10 @@ for i in range(num):
           value: "''' + str(i) + '''"
         - name: ROLE
           value: executor
+        - name: MY_POD_IP
+          valueFrom:  
+            fieldRef:
+              fieldPath: status.podIP
         volumeMounts:
         - name: cache-volume
           mountPath: /dev/shm
@@ -76,6 +80,10 @@ suffix = '''      - name: local-sched
           value: "''' + str(num) + '''"
         - name: DELAY
           value: "4000000000"
+        - name: MY_POD_IP
+          valueFrom:  
+            fieldRef:
+              fieldPath: status.podIP
         volumeMounts:
         - name: cache-volume
           mountPath: /dev/shm
