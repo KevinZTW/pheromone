@@ -66,8 +66,9 @@ def create_cluster(mem_count, ebs_count, func_count, coord_count,
     kcname = management_spec['spec']['containers'][0]['name']
     print(kcname)
 
-    cfile = os.path.join(os.getenv('PHERO_HOME', '../..'),
-                                             'conf/anna-base.yml')
+    # the origin version seems don't have this line
+    # cfile = os.path.join(os.getenv('PHERO_HOME', '../..'),
+    #                                          'conf/anna-base.yml')
     os.system('cp %s anna-config.yml' % cfile)
     
     kubecfg = os.path.join(os.environ['HOME'], '.kube/config')
