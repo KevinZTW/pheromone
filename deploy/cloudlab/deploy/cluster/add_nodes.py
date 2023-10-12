@@ -39,7 +39,7 @@ def add_nodes(client, apps_client, cfile, kinds, counts, create=False,
     for i in range(len(kinds)):
         print('Adding %d %s server node(s) to cluster...' %
               (counts[i], kinds[i]))
-
+        
         pods = client.list_namespaced_pod(namespace=util.NAMESPACE,
                                           label_selector='role=' +
                                           kinds[i]).items
@@ -47,13 +47,8 @@ def add_nodes(client, apps_client, cfile, kinds, counts, create=False,
         previously_created_pods_list.append(get_current_pod_container_pairs(pods))
 
         prev_count = util.get_previous_count(client, kinds[i])
-        
-        util.run_process(['./modify_ig.sh', kinds[i], str(counts[i] +
-                                                          prev_count)])
-        expected_counts.append(counts[i] + prev_count)
 
-    # [kevin] comment this out since we are not using kops
-    # util.run_process(['./validate_cluster.sh'])
+        expected_counts.append(counts[i] + prev_count)
 
     management_ip = util.get_pod_ips(client, 'role=management')[0]
     route_ips = util.get_pod_ips(client, 'role=routing')
@@ -84,6 +79,7 @@ def add_nodes(client, apps_client, cfile, kinds, counts, create=False,
         # adding pods to created nodes.
         yml_name = kind
         if create:
+            print("do in create block for %s" % kind)
             fname = 'yaml/ds/%s-ds.yml' % yml_name
             yml = util.load_yaml(fname, prefix)
 
@@ -99,6 +95,9 @@ def add_nodes(client, apps_client, cfile, kinds, counts, create=False,
                 util.replace_yaml_val(env, 'MANAGEMENT', management_ip)
                 util.replace_yaml_val(env, 'SEED_IP', seed_ip)
 
+            print("body as:")
+            print(yml)
+            
             apps_client.create_namespaced_daemon_set(namespace=util.NAMESPACE,
                                                      body=yml)
 
@@ -125,6 +124,7 @@ def add_nodes(client, apps_client, cfile, kinds, counts, create=False,
 
         for pname, cname in new_pods:
             if kind != 'function' and kind != 'gpu':
+                print("copy anna-config to pod")
                 util.copy_file_to_pod(client, 'anna-config.yml', pname,
                                       '/hydro/anna/conf/', cname)
 
