@@ -1,6 +1,6 @@
 
 # compile functions
-# export PHERO_HOME=$(pwd)
+
 docker run --rm -v /users/kevinztw/pheromone/:/users/kevinztw -it ubuntu:18.04 bash -c \
     "apt update && \
     apt install -y g++ && \
@@ -8,10 +8,10 @@ docker run --rm -v /users/kevinztw/pheromone/:/users/kevinztw -it ubuntu:18.04 b
     chmod +x compile.sh && \
     ./compile.sh"
 
-
-
-# spin up pheromone
+# spin up pheromone cluster, including it's dependency annaKV
 ./deploy/cloudlab/deploy/cluster/start.sh
+
+export PHERO_HOME=$(pwd)
 
 # chmod +x ./examples/cpp/event_stream/upload.sh
 cd $PHERO_HOME/examples/cpp/event_stream

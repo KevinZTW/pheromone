@@ -47,6 +47,7 @@ def add_nodes(client, apps_client, cfile, kinds, counts, create=False,
         previously_created_pods_list.append(get_current_pod_container_pairs(pods))
 
         prev_count = util.get_previous_count(client, kinds[i])
+        
         util.run_process(['./modify_ig.sh', kinds[i], str(counts[i] +
                                                           prev_count)])
         expected_counts.append(counts[i] + prev_count)

@@ -17,7 +17,7 @@
 import argparse
 import os
 
-cluster_name="minikube" # hardcoded for now
+cluster_name="cloudlab" # hardcoded for now
 os.environ["PHERO_CLUSTER_NAME"] = cluster_name # hardcoded for now
 
 from deploy.cluster.add_nodes import batch_add_nodes
@@ -138,10 +138,10 @@ def create_cluster(mem_count, ebs_count, func_count, coord_count,
     batch_add_nodes(client, apps_client, cfile, ['sender'], [sender_count], BATCH_SIZE, prefix)
 
     print('Finished creating all pods...')
-    # os.system('touch setup_complete')
-    # util.copy_file_to_pod(client, 'setup_complete', management_podname, '/hydro',
-    #                       kcname)
-    # os.system('rm setup_complete')
+    os.system('touch setup_complete')
+    util.copy_file_to_pod(client, 'setup_complete', management_podname, '/hydro',
+                          kcname)
+    os.system('rm setup_complete')
     
     #  [kevin] comment out since we are not using kops/aws (do we need to do this for kubespray?)
     # sg_name = 'nodes.' + cluster_name
