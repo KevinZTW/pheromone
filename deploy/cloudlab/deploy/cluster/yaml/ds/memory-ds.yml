@@ -35,6 +35,10 @@ spec:
         image: kevinztw/anna
         imagePullPolicy: Always
         env: 
+        - name: MY_POD_IP
+          valueFrom:  
+            fieldRef:
+              fieldPath: status.podIP
         - name: SERVER_TYPE
           value: "memory"
         - name: ROUTING_IPS

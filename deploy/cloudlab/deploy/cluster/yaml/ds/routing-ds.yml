@@ -34,6 +34,10 @@ spec:
       - name: routing-container
         image: kevinztw/anna
         env: 
+        - name: MY_POD_IP
+          valueFrom:  
+            fieldRef:
+              fieldPath: status.podIP
         - name: SERVER_TYPE
           value: r
         - name: MON_IPS

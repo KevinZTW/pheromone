@@ -48,6 +48,10 @@ spec:
             value: hydro-project
           - name: REPO_BRANCH
             value: master
+          - name: MY_POD_IP
+            valueFrom:  
+              fieldRef:
+                fieldPath: status.podIP
           volumeMounts:
           - mountPath: /ebs/ebs_0
             name: ebs0
