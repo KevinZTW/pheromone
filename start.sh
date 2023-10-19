@@ -19,4 +19,6 @@ cd $PHERO_HOME/examples/cpp/event_stream
 
 # ./deploy/cloudlab/deploy/cluster/cleanup.sh
 cd $PHERO_HOME/client/pheromone 
-python3 -m benchmarks.event_gen
+
+# need to modify the client argument before run this
+# python3 -m benchmarks.event_gen
