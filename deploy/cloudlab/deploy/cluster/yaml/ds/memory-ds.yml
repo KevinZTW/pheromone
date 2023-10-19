@@ -32,7 +32,7 @@ spec:
       hostNetwork: true
       containers:
       - name: memory-container
-        image: hydroproject/anna
+        image: kevinztw/anna
         imagePullPolicy: Always
         env: 
         - name: SERVER_TYPE

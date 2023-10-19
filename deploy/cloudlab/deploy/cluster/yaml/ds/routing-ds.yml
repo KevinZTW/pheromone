@@ -32,7 +32,7 @@ spec:
       hostNetwork: true
       containers:
       - name: routing-container
-        image: hydroproject/anna
+        image: kevinztw/anna
         env: 
         - name: SERVER_TYPE
           value: r
