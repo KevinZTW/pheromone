@@ -18,14 +18,15 @@ kubectl label nodes node-5 role=coordinator
 kubectl label nodes node-6 role=sender
 
 
-
+# core part, creat all related pods, daemonsets and services
 cd deploy/cloudlab
 python3 -m deploy.cluster.create_cluster  -m 1 -r 1 -c 1 -f 1
 
 
-
+# compile proto
 /bin/bash ${PHERO_HOME}/scripts/compile.sh
 
+# setup anna_client which is the dependency for benchmark python scripts
 cd ../..
 cd client/anna_client 
 sudo python3 ./setup.py install

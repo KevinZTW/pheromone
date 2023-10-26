@@ -13,6 +13,10 @@ Please see [our paper](https://arxiv.org/abs/2109.13492) for more details.
 Pheromone runs on a Kubenetes cluster.
 Please refer to deploy/cluster for details.
 
+
+### Deploy on Cloudlab
+[Cloudlab Deployment.md]
+
 ## Acknowledgement
 
 - Pheromone follows the cluster settings of [Cloudburst](https://github.com/hydro-project/cloudburst), where it applies the same way to deploy the cluster and uses [Anna](https://github.com/hydro-project/anna) as the durable key-value store. 
